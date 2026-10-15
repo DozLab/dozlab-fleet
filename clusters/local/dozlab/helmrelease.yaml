@@ -32,11 +32,11 @@ spec:
         app: dozlab-controller
       image:
         repository: ghcr.io/dozlab/dozlab-controller
-        tag: main-0000000-0 # {"$imagepolicy": "flux-system:dozlab-controller:tag"}
+        tag: main-fd71de5-5 # {"$imagepolicy": "flux-system:dozlab-controller:tag"}
       labPod:
-        vmImage: ghcr.io/dozlab/dozlab-firecracker:main-0000000-0 # {"$imagepolicy": "flux-system:dozlab-firecracker"}
+        vmImage: ghcr.io/dozlab/dozlab-firecracker:main-04aee60-2 # {"$imagepolicy": "flux-system:dozlab-firecracker"}
         # Default for labs without their own init image (labs.init_image in the API's database)
-        initImage: ghcr.io/dozlab/dozlab-init-vm:main-0000000-0 # {"$imagepolicy": "flux-system:dozlab-init-vm"}
-        terminalImage: ghcr.io/dozlab/dozlab-terminal:main-0000000-0 # {"$imagepolicy": "flux-system:dozlab-terminal"}
+        initImage: ghcr.io/dozlab/dozlab-init-vm:main-74f0aaf-2 # {"$imagepolicy": "flux-system:dozlab-init-vm"}
+        terminalImage: ghcr.io/dozlab/dozlab-terminal:main-f708f26-4 # {"$imagepolicy": "flux-system:dozlab-terminal"}
         ingressMiddleware: default-dozlab-strip-session-prefix@kubernetescrd
         publicBaseURL: https://dozmanlab.taildc994d.ts.net

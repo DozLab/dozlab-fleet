@@ -1,0 +1,15 @@
+# The dozlab chart, as released by dozlab-infra's helm-chart.yml on a chart-v<version> tag.
+# A new chart version within the range deploys on its own; a major version needs this edited.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: dozlab-chart
+  namespace: dozlab-system
+spec:
+  interval: 10m
+  url: oci://ghcr.io/dozlab/charts/dozlab
+  ref:
+    semver: ">=0.4.0 <1.0.0"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

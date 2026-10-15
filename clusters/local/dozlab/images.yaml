@@ -1,0 +1,97 @@
+# One ImageRepository + ImagePolicy per image CI pushes. CI tags main-<sha7>-<run number>;
+# the policy takes the highest run number.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: dozlab-controller
+  namespace: flux-system
+spec:
+  image: ghcr.io/dozlab/dozlab-controller
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: dozlab-controller
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: dozlab-controller
+  filterTags:
+    pattern: '^main-[a-f0-9]+-(?P<run>[0-9]+)$'
+    extract: '$run'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: dozlab-firecracker
+  namespace: flux-system
+spec:
+  image: ghcr.io/dozlab/dozlab-firecracker
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: dozlab-firecracker
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: dozlab-firecracker
+  filterTags:
+    pattern: '^main-[a-f0-9]+-(?P<run>[0-9]+)$'
+    extract: '$run'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: dozlab-terminal
+  namespace: flux-system
+spec:
+  image: ghcr.io/dozlab/dozlab-terminal
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: dozlab-terminal
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: dozlab-terminal
+  filterTags:
+    pattern: '^main-[a-f0-9]+-(?P<run>[0-9]+)$'
+    extract: '$run'
+  policy:
+    numerical:
+      order: asc
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: dozlab-init-vm
+  namespace: flux-system
+spec:
+  image: ghcr.io/dozlab/dozlab-init-vm
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: dozlab-init-vm
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: dozlab-init-vm
+  filterTags:
+    pattern: '^main-[a-f0-9]+-(?P<run>[0-9]+)$'
+    extract: '$run'
+  policy:
+    numerical:
+      order: asc

@@ -1,0 +1,32 @@
+# Writes the tags the ImagePolicies pick into this repo (the "$imagepolicy" comments under
+# ./clusters/local) and pushes to main. The commit is the rollout; `git revert` it to roll back.
+# Needs the read-write deploy key from `flux bootstrap ... --read-write-key`.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageUpdateAutomation
+metadata:
+  name: dozlab-fleet
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        Roll out new images
+
+        {{ range .Changed.Changes -}}
+        - {{ .OldValue }} -> {{ .NewValue }}
+        {{ end -}}
+    push:
+      branch: main
+  update:
+    path: ./clusters/local
+    strategy: Setters

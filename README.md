@@ -41,8 +41,8 @@ frontend is on GitHub Pages. Postgres and RabbitMQ stay outside Flux for now (`~
 2. **GHCR packages are public**, so the node pulls without a secret: github.com/orgs/DozLab/packages →
    each of `dozlab-controller`, `dozlab-terminal`, `dozlab-firecracker`, `dozlab-init-vm`, `charts/dozlab`
    → Package settings → Change visibility → Public.
-3. **The tags in `helmrelease.yaml` are real** (the first commit has `main-0000000-0` placeholders).
-   Set each to the newest `main-*` tag; after this Flux keeps them current.
+3. **The tags in `helmrelease.yaml` are real**: each is the first `main-*` image CI pushed. After
+   bootstrap, Flux keeps them current.
 4. **Hand the running controller and CRD to the release** (dozlab-infra `helm/dozlab/README.md`,
    "Adopting an existing install"):
    ```bash

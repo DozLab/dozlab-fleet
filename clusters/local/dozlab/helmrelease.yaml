@@ -12,6 +12,9 @@ spec:
   chartRef:
     kind: OCIRepository
     name: dozlab-chart
+  dependsOn:
+    - name: dozlab-secrets
+      namespace: flux-system
   # No install remediation on purpose: it uninstalls a failed install, and this release adopts
   # the controller that was running before Flux (dozlab-infra helm/dozlab/README.md, "Adopting
   # an existing install"). A failed install is left in place to look at.
@@ -22,10 +25,17 @@ spec:
   values:
     crds:
       install: true
-    # The API still runs on the host behind the Funnel; it moves in next (dozlab-api
-    # docs/decision.md, "CI on GitHub Actions, CD with Flux and the dozlab Helm chart").
+    # The API: its migrations run as the chart's hook first. Its Secrets (dozlab-api,
+    # dozlab-api-migrate) come from the dozlab-secrets release (secrets/), hence dependsOn.
+    # Traefik routes /api on any host to it, so the Funnel reaches it with everything else.
     api:
-      enabled: false
+      enabled: true
+      image:
+        repository: ghcr.io/dozlab/dozlab-api
+        tag: main-28977e8-6 # {"$imagepolicy": "flux-system:dozlab-api:tag"}
+      ingress:
+        enabled: true
+        className: traefik
     controller:
       # The Deployment's selector from before the chart; it can't change.
       selectorLabels:

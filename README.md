@@ -10,7 +10,8 @@ clusters/local/                 the single-node k3s cluster (kubeconfig ~/.kube/
   flux-system/                  written by `flux bootstrap`; don't edit
   dozlab/
     chart.yaml                  OCIRepository: oci://ghcr.io/dozlab/charts/dozlab, semver >=0.4.0 <1.0.0
-    helmrelease.yaml            HelmRelease `dozlab` in dozlab-system: the controller, its RBAC, the CRD
+    helmrelease.yaml            HelmRelease `dozlab` in dozlab-system: the controller, the API (its migration
+                                hook, the /api Ingress), RBAC, the CRD; after dozlab-secrets
     images.yaml                 ImageRepository + ImagePolicy per image (newest main-<sha7>-<run>)
     image-automation.yaml       commits the tags those policies pick into helmrelease.yaml
   secrets/
@@ -30,8 +31,8 @@ clusters/local/                 the single-node k3s cluster (kubeconfig ~/.kube/
 Tags and labels are in the decision doc ("Tags and labels"): every image gets `main-<sha7>-<run>` and
 `sha-<full sha>` from `main`, and `1.2.3`/`1.2`/`1` from a `v1.2.3` git tag.
 
-The API and the frontend aren't here: the API still runs on the host (it moves in next), and the
-frontend is on GitHub Pages. Postgres and RabbitMQ stay outside Flux for now (`~/dozlab.sh postgres`,
+The frontend isn't here: it's on GitHub Pages, and calls the API on the Funnel URL, which goes to
+Traefik and on to the API through its `/api` Ingress (`~/dozlab-browser.sh status` checks the chain). Postgres and RabbitMQ stay outside Flux for now (`~/dozlab.sh postgres`,
 `~/dozlab.sh rabbitmq`); they hold data on PVCs, so if they move here, Flux must never prune them.
 
 ## First bring-up (owner; cluster writes)

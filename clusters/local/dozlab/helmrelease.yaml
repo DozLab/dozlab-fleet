@@ -32,7 +32,7 @@ spec:
         app: dozlab-controller
       image:
         repository: ghcr.io/dozlab/dozlab-controller
-        tag: main-fd71de5-5 # {"$imagepolicy": "flux-system:dozlab-controller:tag"}
+        tag: main-aa0454f-7 # {"$imagepolicy": "flux-system:dozlab-controller:tag"}
       labPod:
         vmImage: ghcr.io/dozlab/dozlab-firecracker:main-04aee60-2 # {"$imagepolicy": "flux-system:dozlab-firecracker"}
         # Default for labs without their own init image (labs.init_image in the API's database)

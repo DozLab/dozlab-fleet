@@ -56,6 +56,9 @@ metadata:
 spec:
   image: ghcr.io/dozlab/dozlab-terminal
   interval: 5m
+  # dozlab-terminal is private; ghcr-pull holds a read:packages token (created by hand, not in git)
+  secretRef:
+    name: ghcr-pull
 ---
 apiVersion: image.toolkit.fluxcd.io/v1
 kind: ImagePolicy

@@ -39,8 +39,15 @@ frontend is on GitHub Pages. Postgres and RabbitMQ stay outside Flux for now (`~
    cd ~/dozlab/dozlab-infra && git fetch && git tag chart-v0.4.0 origin/main && git push origin chart-v0.4.0
    ```
 2. **GHCR packages are public**, so the node pulls without a secret: github.com/orgs/DozLab/packages →
-   each of `dozlab-controller`, `dozlab-terminal`, `dozlab-firecracker`, `dozlab-init-vm`, `charts/dozlab`
-   → Package settings → Change visibility → Public.
+   each of `dozlab-controller`, `dozlab-firecracker`, `dozlab-init-vm`, `charts/dozlab`
+   → Package settings → Change visibility → Public. `dozlab-terminal` stays private; the cluster pulls
+   it with a `ghcr-pull` secret holding a classic token with only `read:packages`, saved to
+   `~/.dozlab-ghcr-token`. Lab pods run as the `default` service account in `default`, and Flux's
+   `dozlab-terminal` ImageRepository uses the same secret in `flux-system`. The secret isn't in git:
+   ```
+   for ns in default flux-system; do kubectl -n $ns create secret docker-registry ghcr-pull --docker-server=ghcr.io --docker-username=<github user> --docker-password="$(cat ~/.dozlab-ghcr-token)"; done
+   kubectl -n default patch sa default -p '{"imagePullSecrets":[{"name":"ghcr-pull"}]}'
+   ```
 3. **The tags in `helmrelease.yaml` are real**: each is the first `main-*` image CI pushed. After
    bootstrap, Flux keeps them current.
 4. **Hand the running controller and CRD to the release** (dozlab-infra `helm/dozlab/README.md`,

@@ -32,7 +32,7 @@ spec:
       enabled: true
       image:
         repository: ghcr.io/dozlab/dozlab-api
-        tag: main-28977e8-6 # {"$imagepolicy": "flux-system:dozlab-api:tag"}
+        tag: main-cde48fe-8 # {"$imagepolicy": "flux-system:dozlab-api:tag"}
       ingress:
         enabled: true
         className: traefik

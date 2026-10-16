@@ -40,3 +40,6 @@ spec:
         terminalImage: ghcr.io/dozlab/dozlab-terminal:main-f708f26-4 # {"$imagepolicy": "flux-system:dozlab-terminal"}
         ingressMiddleware: default-dozlab-strip-session-prefix@kubernetescrd
         publicBaseURL: https://dozmanlab.taildc994d.ts.net
+        # Private dozlab-terminal; ghcr-pull is written by ESO (secrets/).
+        imagePullSecrets:
+          - ghcr-pull

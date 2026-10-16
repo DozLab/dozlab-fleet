@@ -13,6 +13,9 @@ clusters/local/                 the single-node k3s cluster (kubeconfig ~/.kube/
     helmrelease.yaml            HelmRelease `dozlab` in dozlab-system: the controller, its RBAC, the CRD
     images.yaml                 ImageRepository + ImagePolicy per image (newest main-<sha7>-<run>)
     image-automation.yaml       commits the tags those policies pick into helmrelease.yaml
+  secrets/
+    external-secrets.yaml       HelmRelease: External Secrets Operator 2.12.0 (upstream chart)
+    dozlab-secrets.yaml         OCIRepository + HelmRelease: dozlab-infra's dozlab-secrets chart, after ESO
 ```
 
 ## How a change reaches the cluster
@@ -40,14 +43,9 @@ frontend is on GitHub Pages. Postgres and RabbitMQ stay outside Flux for now (`~
    ```
 2. **GHCR packages are public**, so the node pulls without a secret: github.com/orgs/DozLab/packages →
    each of `dozlab-controller`, `dozlab-firecracker`, `dozlab-init-vm`, `charts/dozlab`
-   → Package settings → Change visibility → Public. `dozlab-terminal` stays private; the cluster pulls
-   it with a `ghcr-pull` secret holding a classic token with only `read:packages`, saved to
-   `~/.dozlab-ghcr-token`. Lab pods run as the `default` service account in `default`, and Flux's
-   `dozlab-terminal` ImageRepository uses the same secret in `flux-system`. The secret isn't in git:
-   ```
-   for ns in default flux-system; do kubectl -n $ns create secret docker-registry ghcr-pull --docker-server=ghcr.io --docker-username=<github user> --docker-password="$(cat ~/.dozlab-ghcr-token)"; done
-   kubectl -n default patch sa default -p '{"imagePullSecrets":[{"name":"ghcr-pull"}]}'
-   ```
+   → Package settings → Change visibility → Public. Also `charts/dozlab-secrets` after its first
+   release. `dozlab-terminal` stays private: lab pods (`controller.labPod.imagePullSecrets`) and
+   Flux's `dozlab-terminal` ImageRepository pull it with `ghcr-pull`, which ESO writes (see "Secrets").
 3. **The tags in `helmrelease.yaml` are real**: each is the first `main-*` image CI pushed. After
    bootstrap, Flux keeps them current.
 4. **Hand the running controller and CRD to the release** (dozlab-infra `helm/dozlab/README.md`,
@@ -79,6 +77,21 @@ frontend is on GitHub Pages. Postgres and RabbitMQ stay outside Flux for now (`~
    kubectl delete clusterrolebinding dozlab-controller-rolebinding
    kubectl delete clusterrole dozlab-controller-role
    ```
+
+## Secrets
+
+Values live in the `dozlab-secrets` namespace; External Secrets Operator copies them where they're
+needed (Kubernetes provider, ClusterSecretStore `dozlab`). Both are Helm releases in `secrets/`. A
+source Secret is created empty by the chart and filled once by hand, since a value can't be in git:
+
+```bash
+kubectl -n dozlab-secrets patch secret ghcr --type merge \
+  -p "{\"stringData\":{\"username\":\"<github user>\",\"token\":\"$(cat ~/.dozlab-ghcr-token)\"}}"
+kubectl get externalsecrets -A           # SecretSynced = the copy is current
+```
+
+Adding one: a value in the chart's `values.yaml`/templates (dozlab-infra `helm/dozlab-secrets`),
+a chart release, then fill it as above.
 
 ## Day to day
 
